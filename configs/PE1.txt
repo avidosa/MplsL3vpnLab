@@ -1,0 +1,159 @@
+! Running-config: PE1
+! Exported from GNS3 lab
+!
+Building configuration...
+
+Current configuration : 3998 bytes
+!
+! Last configuration change at 12:09:53 UTC Wed May 20 2026
+!
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname PE1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+ip vrf CLIENTE
+ rd 100:1
+ route-target export 100:1
+ route-target import 100:1
+!
+!
+!
+ip cef
+no ipv6 cef
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 1.1.1.1 255.255.255.255
+ ip ospf 1 area 0
+!
+interface GigabitEthernet0/0
+ description To-CE-A1
+ no switchport
+ ip vrf forwarding CLIENTE
+ ip address 10.1.5.1 255.255.255.252
+ negotiation auto
+!
+interface GigabitEthernet0/1
+ description To-CE-A2
+ no switchport
+ ip vrf forwarding CLIENTE
+ ip address 10.1.6.1 255.255.255.252
+ negotiation auto
+!
+interface GigabitEthernet0/2
+ description To-P1
+ no switchport
+ ip address 10.1.1.1 255.255.255.252
+ ip ospf 1 area 0
+ negotiation auto
+ mpls ip
+!
+interface GigabitEthernet0/3
+ description To-P2
+ no switchport
+ ip address 10.1.2.1 255.255.255.252
+ ip ospf 1 area 0
+ negotiation auto
+ mpls ip
+!
+interface GigabitEthernet1/0
+ description To-Internet
+ no switchport
+ ip address 10.1.9.1 255.255.255.252
+ negotiation auto
+!
+router ospf 1
+ router-id 1.1.1.1
+ passive-interface default
+ no passive-interface GigabitEthernet0/2
+ no passive-interface GigabitEthernet0/3
+!
+router bgp 100
+ bgp router-id 1.1.1.1
+ bgp log-neighbor-changes
+ neighbor 1.1.1.2 remote-as 100
+ neighbor 1.1.1.2 update-source Loopback0
+ !
+ address-family vpnv4
+  neighbor 1.1.1.2 activate
+  neighbor 1.1.1.2 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf CLIENTE
+  neighbor 10.1.5.2 remote-as 65001
+  neighbor 10.1.5.2 activate
+  neighbor 10.1.6.2 remote-as 65002
+  neighbor 10.1.6.2 activate
+ exit-address-family
+!
+ip forward-protocol nd
+!
+ip http server
+ip http secure-server
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+!
+control-plane
+!
+banner exec ^C
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+banner incoming ^C
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************^C
+banner login ^C
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's
